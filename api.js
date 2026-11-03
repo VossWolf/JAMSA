@@ -4,7 +4,8 @@ const { MongoClient } = require("mongodb");
 const { PassThrough } = require('node:stream');
 const cors = require('cors')
 const { inspect } = require ('node:util');
-const express = require('express')
+const express = require('express');
+const { downloadTo } = require("basic-ftp/dist/transfer");
 dotenv.config();
 
 const app = express()
@@ -118,7 +119,16 @@ app.get('/api/musiclist', async (res) =>{
 app.post('/api/downloadMusic', async (req, res) => {
 
     const index = req.body?.index;
-
+    try{
+        let indexes=await ListMusic()
+        let {stream, client} = await DownloadMusic(indexes[index].path)
+    }
+    catch(err){
+        console.log(err)
+    }
+    finally{
+        client.close()
+    }
 
     
 });
