@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: jamsa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: 192.168.1.25:32000/jamsa-backend:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6777
+          envFrom:
+            - secretRef:
+                name: backend-env
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: jamsa
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - port: 6777
+      targetPort: 6777
+      protocol: TCP
